@@ -42,20 +42,43 @@ const paragraphCount = (textArea) => {
 
 const synthesize = () => {
     const text = text_area.value
+   
     if(text.length === 0) {
         alert("No text to synthensize!")
     }
+
+    // const synthensizeButton = synthensize_button;
+    synthensize_button.disabled = true;
+    synthensize_button.classList.toggle("btn-disabled")
+
+
     let utterance = new SpeechSynthesisUtterance();
     let voices = window.speechSynthesis.getVoices()
+    let voice_id = 26;
     for(let i=0; i< voices.length; i++) {
-        if(voices[i].lang === "en-IN")
-            console.log(i + ") " + voices[i].name + " " + voices[i].lang)
+        if(voices[i].lang === "en-IN") {
+            voice_id = i;
+            break;
+        } 
     }
 
     // Set the text and voice of the utterance
     utterance.text = text;
-    utterance.voice = window.speechSynthesis.getVoices()[26];
+    utterance.voice = window.speechSynthesis.getVoices()[voice_id];
   
     // Speak the utterance
     window.speechSynthesis.speak(utterance);
-}
+
+    utterance.onend = () => {
+      // Re-enable the Synthesize button after synthesis is complete
+      synthensize_button.disabled = false;
+      synthensize_button.classList.toggle("btn-disabled")
+  };
+
+  utterance.onerror = (event) => {
+    alert("Speech synthesis error: " + event.error);
+    // Re-enable the Synthesize button in case of an error
+    synthensize_button.disabled = false;
+    synthensize_button.classList.toggle("btn-disabled")
+};
+};
